@@ -133,17 +133,59 @@ if (!IS_VANILLA) {
 
     process.env.DATA_DIR = join(app.getPath("userData"), "..", "Equicord");
 
+    // Fix for net::ERR_QUIC_PROTOCOL_ERROR - Add these flags very early and aggressively
+    console.log("[Equicord] Applying aggressive QUIC protocol fixes...");
+    app.commandLine.appendSwitch("disable-quic");
+    app.commandLine.appendSwitch("disable-http2");
+    app.commandLine.appendSwitch("disable-http3");
+    app.commandLine.appendSwitch("disable-web-security");
+    app.commandLine.appendSwitch("disable-features", "QuicTransport,HTTP3Transport,VizDisplayCompositor");
+    app.commandLine.appendSwitch("enable-features", "NetworkService,NetworkServiceLogging");
+    app.commandLine.appendSwitch("force-renderer-accessibility");
+    app.commandLine.appendSwitch("disable-dev-shm-usage");
+    app.commandLine.appendSwitch("no-sandbox");
+    app.commandLine.appendSwitch("disable-software-rasterizer");
+    app.commandLine.appendSwitch("disable-background-networking");
+    app.commandLine.appendSwitch("disable-default-apps");
+    app.commandLine.appendSwitch("force-fieldtrials", "WebRTC-DataChannel-Dcsctp/Enabled/");
+    app.commandLine.appendSwitch("use-gl", "desktop");
+
     // Monkey patch commandLine to:
     // - disable WidgetLayering: Fix DevTools context menus https://github.com/electron/electron/issues/38790
     // - disable UseEcoQoSForBackgroundProcess: Work around Discord unloading when in background
+    // - disable VizDisplayCompositor: Fix QUIC protocol errors
+    // - disable all QUIC/HTTP3 related features aggressively
     const originalAppend = app.commandLine.appendSwitch;
     app.commandLine.appendSwitch = function (...args) {
+        // Block any attempts to enable QUIC
+        if (args[0] === "enable-quic" || args[0] === "enable-http3") {
+            console.log("[Equicord] Blocked attempt to enable:", args[0]);
+            return;
+        }
+
         if (args[0] === "disable-features") {
             const disabledFeatures = new Set((args[1] ?? "").split(","));
             disabledFeatures.add("WidgetLayering");
             disabledFeatures.add("UseEcoQoSForBackgroundProcess");
-            args[1] += [...disabledFeatures].join(",");
+            disabledFeatures.add("VizDisplayCompositor");
+            disabledFeatures.add("QuicTransport");
+            disabledFeatures.add("HTTP3Transport");
+            disabledFeatures.add("QuicUdpProxyConnectHelper");
+            disabledFeatures.add("WebSocketStream");
+            disabledFeatures.add("NetworkServiceInProcess");
+            args[1] = [...disabledFeatures].join(",");
         }
+
+        if (args[0] === "enable-features") {
+            // Ensure NetworkService is always enabled but remove any QUIC features
+            const enabledFeatures = new Set((args[1] ?? "").split(","));
+            enabledFeatures.delete("QuicTransport");
+            enabledFeatures.delete("HTTP3Transport");
+            enabledFeatures.add("NetworkService");
+            enabledFeatures.add("NetworkServiceLogging");
+            args[1] = [...enabledFeatures].join(",");
+        }
+
         return originalAppend.apply(this, args);
     };
 

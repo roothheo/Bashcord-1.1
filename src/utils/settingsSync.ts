@@ -41,7 +41,7 @@ export async function importSettings(data: string) {
         await VencordNative.quickCss.set(parsed.quickCss);
         if (parsed.dataStore) await DataStore.setMany(parsed.dataStore);
     } else
-        throw new Error("Invalid Settings. Is this even an Equicord Settings file?");
+        throw new Error("Invalid Settings. Is this even a Bashcord Settings file?");
 }
 
 export async function exportSettings({ minify }: { minify?: boolean; } = {}) {
@@ -80,7 +80,7 @@ export async function uploadSettingsBackup(showToast = true): Promise<void> {
     if (IS_DISCORD_DESKTOP) {
         const [file] = await DiscordNative.fileManager.openFiles({
             filters: [
-                { name: "Equicord Settings Backup", extensions: ["json"] },
+                { name: "Bashcord Settings Backup", extensions: ["json"] },
                 { name: "all", extensions: ["*"] }
             ]
         });

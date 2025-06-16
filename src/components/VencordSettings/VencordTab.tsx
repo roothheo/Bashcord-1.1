@@ -119,8 +119,8 @@ function EquicordSettings() {
         ];
 
     return (
-        <SettingsTab title="Equicord Settings">
-            {(isEquicordDonor(user?.id) || isVencordDonor(user?.id)) ? (
+        <SettingsTab title="Bashcord Settings">
+            {(isEquicordDonor(user?.id) || isVencordDonor(user?.id)) && (
                 <SpecialCard
                     title="Donations"
                     subtitle="Thank you for donating!"
@@ -134,16 +134,6 @@ function EquicordSettings() {
                     cardImage={VENNIE_DONATOR_IMAGE}
                     backgroundImage={DONOR_BACKGROUND_IMAGE}
                     backgroundColor="#ED87A9"
-                >
-                    <DonateButtonComponent />
-                </SpecialCard>
-            ) : (
-                <SpecialCard
-                    title="Support the Project"
-                    description="Please consider supporting the development of Equicord by donating!"
-                    cardImage={donateImage}
-                    backgroundImage={DONOR_BACKGROUND_IMAGE}
-                    backgroundColor="#c3a3ce"
                 >
                     <DonateButtonComponent />
                 </SpecialCard>
@@ -314,7 +304,7 @@ function EquicordSettings() {
 
             <Forms.FormSection
                 className={Margins.top16}
-                title="Equicord Notifications"
+                title="Bashcord Notifications"
                 tag="h5"
             >
                 <Flex>
@@ -355,4 +345,4 @@ export function isEquicordDonor(userId: string): boolean {
     return GuildMemberStore.getMember(GUILD_ID, userId)?.roles.includes(DONOR_ROLE_ID) || !!donorBadges;
 }
 
-export default wrapTab(EquicordSettings, "Equicord Settings");
+export default wrapTab(EquicordSettings, "Bashcord Settings");

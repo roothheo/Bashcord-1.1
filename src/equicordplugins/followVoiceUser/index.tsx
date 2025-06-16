@@ -31,7 +31,6 @@ let followedUserInfo: TFollowedUserInfo = null;
 const voiceChannelAction = findByPropsLazy("selectVoiceChannel");
 const VoiceStateStore = findStoreLazy("VoiceStateStore");
 const UserStore = findStoreLazy("UserStore");
-const RelationshipStore = findStoreLazy("RelationshipStore");
 
 const settings = definePluginSettings({
     onlyWhenInVoice: {
@@ -47,7 +46,7 @@ const settings = definePluginSettings({
 });
 
 const UserContextMenuPatch: NavContextMenuPatchCallback = (children, { channel, user }: UserContextProps) => {
-    if (UserStore.getCurrentUser().id === user.id || !RelationshipStore.getFriendIDs().includes(user.id)) return;
+    if (UserStore.getCurrentUser().id === user.id) return;
 
     const [checked, setChecked] = React.useState(followedUserInfo?.userId === user.id);
 
@@ -88,7 +87,6 @@ export default definePlugin({
     flux: {
         async VOICE_STATE_UPDATES({ voiceStates }: { voiceStates: VoiceState[]; }) {
             if (!followedUserInfo) return;
-            if (!RelationshipStore.getFriendIDs().includes(followedUserInfo.userId)) return;
 
             if (
                 settings.store.onlyWhenInVoice
