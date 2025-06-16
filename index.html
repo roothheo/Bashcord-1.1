@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bashcord Installer v1.1</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <img src="assets/bashcord-logo.png" alt="Bashcord" class="logo-img">
+                <h1>Bashcord <span class="version">v1.1</span></h1>
+            </div>
+            <p class="subtitle">Le client Discord le plus mignon mais fait par Ba$h 💜</p>
+        </header>
+
+        <main class="main">
+            <div class="tab-container">
+                <div class="tabs">
+                    <button class="tab active" data-tab="install">Installation</button>
+                    <button class="tab" data-tab="uninstall">Désinstallation</button>
+                    <button class="tab" data-tab="about">À propos</button>
+                </div>
+
+                <!-- Onglet Installation -->
+                <div id="install" class="tab-content active">
+                    <div class="section">
+                        <h2>Installation de Bashcord</h2>
+                        <p>Choisissez vos options d'installation :</p>
+                        
+                        <div class="options">
+                            <div class="option-group">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="installLocation" onchange="toggleLocationSelector()">
+                                    <span class="checkmark"></span>
+                                    Choisir l'emplacement d'installation
+                                </label>
+                                
+                                <div id="locationSelector" class="location-selector" style="display: none;">
+                                    <input type="text" id="installPath" placeholder="Chemin d'installation" readonly>
+                                    <button onclick="selectInstallLocation()" class="btn-secondary">Parcourir</button>
+                                </div>
+                            </div>
+
+                            <div class="option-group">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="openAsar" checked>
+                                    <span class="checkmark"></span>
+                                    Installer OpenAsar (recommandé pour de meilleures performances)
+                                </label>
+                            </div>
+
+                            <div class="option-group">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="autoUpdate" checked>
+                                    <span class="checkmark"></span>
+                                    Mise à jour automatique de Bashcord
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="install-section">
+                            <button onclick="startInstallation()" class="btn-primary" id="installBtn">
+                                <span class="btn-icon">🚀</span>
+                                Installer Bashcord
+                            </button>
+                        </div>
+
+                        <div id="progressContainer" class="progress-container" style="display: none;">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                            <p id="progressText">Préparation...</p>
+                        </div>
+
+                        <div id="outputContainer" class="output-container" style="display: none;">
+                            <h3>Journal d'installation</h3>
+                            <pre id="installOutput"></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Onglet Désinstallation -->
+                <div id="uninstall" class="tab-content">
+                    <div class="section">
+                        <h2>Désinstallation de Bashcord</h2>
+                        <p>Supprimer Bashcord de votre client Discord.</p>
+                        
+                        <div class="warning-box">
+                            <span class="warning-icon">⚠️</span>
+                            <p>Cette action supprimera Bashcord de votre client Discord. Vos paramètres Discord ne seront pas affectés.</p>
+                        </div>
+
+                        <button onclick="startUninstallation()" class="btn-danger" id="uninstallBtn">
+                            <span class="btn-icon">🗑️</span>
+                            Désinstaller Bashcord
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Onglet À propos -->
+                <div id="about" class="tab-content">
+                    <div class="section">
+                        <h2>À propos de Bashcord</h2>
+                        <div class="about-content">
+                            <div class="feature-list">
+                                <div class="feature">
+                                    <span class="feature-icon">✨</span>
+                                    <div>
+                                        <h3>Plugins exclusifs</h3>
+                                        <p>Plus de 200 plugins personnalisés par Ba$h</p>
+                                    </div>
+                                </div>
+                                <div class="feature">
+                                    <span class="feature-icon">🎨</span>
+                                    <div>
+                                        <h3>Interface améliorée</h3>
+                                        <p>Design personnalisé et optimisations visuelles</p>
+                                    </div>
+                                </div>
+                                <div class="feature">
+                                    <span class="feature-icon">⚡</span>
+                                    <div>
+                                        <h3>Performances accrues</h3>
+                                        <p>Client plus rapide et plus stable</p>
+                                    </div>
+                                </div>
+                                <div class="feature">
+                                    <span class="feature-icon">🔒</span>
+                                    <div>
+                                        <h3>Open Source</h3>
+                                        <p>Code source disponible sur GitHub</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="links">
+                                <button onclick="openLink('https://github.com/roothheo/Bashcord-1.1')" class="btn-link">
+                                    GitHub
+                                </button>
+                                <button onclick="openLink('https://discord.gg/bashcord')" class="btn-link">
+                                    Discord
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="platform-info">
+                <span id="platformInfo">Chargement...</span>
+            </div>
+            <div class="footer-text">
+                <p>Bashcord Installer v1.1 • Made with 💜 by Ba$h</p>
+                <p class="disclaimer">Bashcord n'est pas affilié à Discord Inc.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html> 
