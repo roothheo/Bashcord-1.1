@@ -5,7 +5,6 @@
  */
 
 import { definePluginSettings } from "@api/Settings";
-import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 
 const settings = definePluginSettings({
@@ -37,51 +36,29 @@ export default definePlugin({
     settings,
 
     patches: [
-        // Patch pour les labels dans les paramètres
+        // Patch spécifique pour ligne 89 : label header
         {
-            find: "Bashcord",
-            replacement: [
-                {
-                    match: /label:\s*"Bashcord"/g,
-                    replace: `label: $self.getCustomName()`
-                },
-                {
-                    match: /section:\s*(.{0,20}),\s*label:\s*"Bashcord"/g,
-                    replace: `section: $1, label: $self.getCustomName()`
-                }
-            ]
-        },
-        // Patch pour les headers
-        {
-            find: "className: \"vc-settings-header\"",
+            find: "section: SectionTypes.HEADER,",
             replacement: {
-                match: /label:\s*"Bashcord",\s*className:\s*"vc-settings-header"/,
-                replace: `label: $self.getCustomName(), className: "vc-settings-header"`
+                match: /section:\s*SectionTypes\.HEADER,\s*label:\s*"Bashcord",/,
+                replace: "section: SectionTypes.HEADER, label: $self.getCustomName(),"
             }
         },
-        // Patch pour les informations de version
+        // Patch spécifique pour ligne 94 : label EquicordSettings
         {
-            find: "gitHash",
-            replacement: [
-                {
-                    match: /`Bashcord \${gitHash}\${additionalInfo}`/,
-                    replace: "`${$self.getCustomName()} ${gitHash}${additionalInfo}`"
-                },
-                {
-                    match: /rows = \[\`Bashcord/,
-                    replace: "rows = [`${$self.getCustomName()}"
-                }
-            ]
+            find: "section: \"EquicordSettings\",",
+            replacement: {
+                match: /section:\s*"EquicordSettings",\s*label:\s*"Bashcord",/,
+                replace: "section: \"EquicordSettings\", label: $self.getCustomName(),"
+            }
         },
-        // Patch pour les searchable titles
+        // Patch spécifique pour ligne 95 : searchableTitles
         {
-            find: "searchableTitles:",
-            replacement: [
-                {
-                    match: /searchableTitles:\s*\["Bashcord",\s*"Settings",\s*"Bashcord Settings"\]/,
-                    replace: `searchableTitles: [$self.getCustomNameArray(), "Settings", $self.getCustomName() + " Settings"]`
-                }
-            ]
+            find: "searchableTitles: [\"Bashcord\", \"Settings\", \"Bashcord Settings\"]",
+            replacement: {
+                match: /searchableTitles:\s*\["Bashcord",\s*"Settings",\s*"Bashcord Settings"\]/,
+                replace: "searchableTitles: [$self.getCustomNameQuoted(), \"Settings\", $self.getCustomName() + \" Settings\"]"
+            }
         }
     ],
 
@@ -107,4 +84,4 @@ export default definePlugin({
     getCustomNameQuoted(): string {
         return `"${this.getCustomName()}"`;
     }
-}); 
+});
