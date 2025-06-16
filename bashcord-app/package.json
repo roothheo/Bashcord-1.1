@@ -4,13 +4,13 @@
     "description": "The other cutest Discord client mod but made by Ba$h",
     "main": "main.js",
     "private": true,
-    "homepage": "https://github.com/roothheo/Bashcord-1.1",
+    "homepage": "https://github.com/roothheo/bashcord",
     "bugs": {
-        "url": "https://github.com/roothheo/Bashcord-1.1/issues"
+        "url": "https://github.com/roothheo/bashcord/issues"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/roothheo/Bashcord-1.1.git"
+        "url": "git+https://github.com/roothheo/bashcord.git"
     },
     "license": "GPL-3.0-or-later",
     "author": "Bash",

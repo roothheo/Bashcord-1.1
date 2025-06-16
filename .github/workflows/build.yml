@@ -7,15 +7,15 @@ on:
             - main
 env:
     FORCE_COLOR: true
-    GITHUB_TOKEN: ${{ secrets.ETOKEN }}
-    REPO: Equicord/Equibored
+    GITHUB_TOKEN: ${{ github.token }}
+    REPO: roothheo/bashcord
     USERNAME: GitHub-Actions
 
 permissions: write-all
 
 jobs:
     Build:
-        name: Build Equicord
+        name: Build Bashcord
         runs-on: ubuntu-latest
 
         steps:
@@ -66,8 +66,10 @@ jobs:
                   rm release/package.json
                   rm release/*.map
 
-            - name: Upload Equicord Stable
+            - name: Upload Bashcord Stable
               if: ${{ github.ref_name == 'main' }}
+              env:
+                  GH_TOKEN: ${{ github.token }}
               run: |
                   gh release upload latest --clobber dist/release/*
 
