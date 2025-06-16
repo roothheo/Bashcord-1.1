@@ -23,16 +23,16 @@ function Write-Color($text, $color = "White") {
 
 function Write-Header {
     Clear-Host
-    Write-Color "╔══════════════════════════════════════════════════════════╗" "Cyan"
-    Write-Color "║                 BASHCORD AUTO-INSTALLER                  ║" "Cyan"
-    Write-Color "║       Installation complète automatique pour Windows     ║" "Cyan"
-    Write-Color "║                                                          ║" "Cyan"
-    Write-Color "║   • Git + Node.js + pnpm                                ║" "Gray"
-    Write-Color "║   • Clone + Build automatique                            ║" "Gray"
-    Write-Color "║   • Injection dans Discord                               ║" "Gray"
-    Write-Color "║                                                          ║" "Cyan"
-    Write-Color "║                 github.com/roothheo/Bashcord             ║" "Gray"
-    Write-Color "╚══════════════════════════════════════════════════════════╝" "Cyan"
+    Write-Color "========================================" "Cyan"
+    Write-Color "        BASHCORD AUTO-INSTALLER        " "Cyan"
+    Write-Color "Installation complete automatique       " "Cyan"
+    Write-Color "                                       " "Cyan"
+    Write-Color "Git + Node.js + pnpm                  " "Gray"
+    Write-Color "Clone + Build automatique              " "Gray"
+    Write-Color "Injection dans Discord                 " "Gray"
+    Write-Color "                                       " "Cyan"
+    Write-Color "github.com/roothheo/Bashcord          " "Gray"
+    Write-Color "========================================" "Cyan"
     Write-Host ""
 }
 
@@ -54,114 +54,114 @@ function Test-Admin {
 }
 
 function Install-Chocolatey {
-    Write-Log "🍫 Installation de Chocolatey..."
+    Write-Log "Installation de Chocolatey..."
     try {
         if (!(Get-Command choco -ErrorAction SilentlyContinue)) {
             Set-ExecutionPolicy Bypass -Scope Process -Force
             [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
             iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
             refreshenv
-            Write-Log "✅ Chocolatey installé!"
+            Write-Log "Chocolatey installe!"
         } else {
-            Write-Log "✅ Chocolatey déjà installé"
+            Write-Log "Chocolatey deja installe"
         }
         return $true
     } catch {
-        Write-Log "❌ Erreur installation Chocolatey: $($_.Exception.Message)"
+        Write-Log "Erreur installation Chocolatey: $($_.Exception.Message)"
         return $false
     }
 }
 
 function Install-Dependencies {
-    Write-Log "📦 Installation des dépendances..."
+    Write-Log "Installation des dependances..."
     
     try {
         # Installer Git
         if (!(Get-Command git -ErrorAction SilentlyContinue)) {
-            Write-Log "📥 Installation de Git..."
+            Write-Log "Installation de Git..."
             choco install git -y --force
             refreshenv
         } else {
-            Write-Log "✅ Git déjà installé"
+            Write-Log "Git deja installe"
         }
         
         # Installer Node.js
         if (!(Get-Command node -ErrorAction SilentlyContinue)) {
-            Write-Log "📥 Installation de Node.js..."
+            Write-Log "Installation de Node.js..."
             choco install nodejs --version=20.11.0 -y --force
             refreshenv
         } else {
-            Write-Log "✅ Node.js déjà installé"
+            Write-Log "Node.js deja installe"
         }
         
         # Installer pnpm
         if (!(Get-Command pnpm -ErrorAction SilentlyContinue)) {
-            Write-Log "📥 Installation de pnpm..."
+            Write-Log "Installation de pnpm..."
             npm install -g pnpm
             refreshenv
         } else {
-            Write-Log "✅ pnpm déjà installé"
+            Write-Log "pnpm deja installe"
         }
         
         return $true
     } catch {
-        Write-Log "❌ Erreur installation dépendances: $($_.Exception.Message)"
+        Write-Log "Erreur installation dependances: $($_.Exception.Message)"
         return $false
     }
 }
 
 function Clone-Bashcord {
-    Write-Log "📥 Clonage de Bashcord..."
+    Write-Log "Clonage de Bashcord..."
     
     try {
         if (Test-Path $InstallDir) {
-            Write-Log "🗑️ Suppression de l'ancienne installation..."
+            Write-Log "Suppression de l'ancienne installation..."
             Remove-Item $InstallDir -Recurse -Force
         }
         
-        Write-Log "📦 Clonage du repository..."
+        Write-Log "Clonage du repository..."
         git clone $BashcordRepo $InstallDir
         
         if (!(Test-Path $InstallDir)) {
-            throw "Le clonage a échoué"
+            throw "Le clonage a echoue"
         }
         
-        Write-Log "✅ Bashcord cloné avec succès!"
+        Write-Log "Bashcord clone avec succes!"
         return $true
     } catch {
-        Write-Log "❌ Erreur lors du clonage: $($_.Exception.Message)"
+        Write-Log "Erreur lors du clonage: $($_.Exception.Message)"
         return $false
     }
 }
 
 function Build-Bashcord {
-    Write-Log "🔨 Construction de Bashcord..."
+    Write-Log "Construction de Bashcord..."
     
     try {
         Set-Location $InstallDir
         
-        Write-Log "📦 Installation des dépendances Node.js..."
+        Write-Log "Installation des dependances Node.js..."
         $result = pnpm install --no-frozen-lockfile
         if ($LASTEXITCODE -ne 0) {
-            throw "pnpm install a échoué"
+            throw "pnpm install a echoue"
         }
         
-        Write-Log "🔨 Construction du projet..."
+        Write-Log "Construction du projet..."
         $result = pnpm build
         if ($LASTEXITCODE -ne 0) {
-            throw "pnpm build a échoué"
+            throw "pnpm build a echoue"
         }
         
-        Write-Log "✅ Construction terminée!"
+        Write-Log "Construction terminee!"
         return $true
     } catch {
-        Write-Log "❌ Erreur lors de la construction: $($_.Exception.Message)"
+        Write-Log "Erreur lors de la construction: $($_.Exception.Message)"
         return $false
     }
 }
 
 function Find-Discord {
-    Write-Log "🔍 Recherche des installations Discord..."
+    Write-Log "Recherche des installations Discord..."
     
     $discordPaths = @(
         @{ Path = "$env:LOCALAPPDATA\Discord"; Name = "Discord Stable"; Type = "stable" },
@@ -181,7 +181,7 @@ function Find-Discord {
                     Type = $discord.Type
                     Version = $versions[0].Name
                 }
-                Write-Log "✅ Trouvé: $($discord.Name) - $($versions[0].Name)"
+                Write-Log "Trouve: $($discord.Name) - $($versions[0].Name)"
             }
         }
     }
@@ -190,15 +190,15 @@ function Find-Discord {
 }
 
 function Show-DiscordMenu($discordList) {
-    Write-Color "`n🎯 Choisissez quel Discord patcher:" "Yellow"
-    Write-Color "═══════════════════════════════════════" "Yellow"
+    Write-Color "`nChoisissez quel Discord patcher:" "Yellow"
+    Write-Color "===============================" "Yellow"
     
     for ($i = 0; $i -lt $discordList.Count; $i++) {
         $discord = $discordList[$i]
         Write-Color "[$($i + 1)] $($discord.Name) - $($discord.Version)" "Cyan"
     }
     
-    Write-Color "[A] Tous les Discord trouvés" "Green"
+    Write-Color "[A] Tous les Discord trouves" "Green"
     Write-Color "[Q] Quitter sans patcher" "Red"
     Write-Color ""
     
@@ -211,19 +211,19 @@ function Show-DiscordMenu($discordList) {
         } elseif ($choice -eq "Q" -or $choice -eq "q") {
             return @()
         } else {
-            Write-Color "❌ Choix invalide. Veuillez réessayer." "Red"
+            Write-Color "Choix invalide. Veuillez reessayer." "Red"
         }
     } while ($true)
 }
 
 function Inject-Bashcord($targetDiscords) {
-    Write-Log "🚀 Injection de Bashcord..."
+    Write-Log "Injection de Bashcord..."
     
     $success = 0
     $total = $targetDiscords.Count
     
     foreach ($discord in $targetDiscords) {
-        Write-Log "🎯 Injection dans $($discord.Name)..."
+        Write-Log "Injection dans $($discord.Name)..."
         
         try {
             Set-Location $InstallDir
@@ -233,22 +233,22 @@ function Inject-Bashcord($targetDiscords) {
             $result = pnpm inject
             
             if ($LASTEXITCODE -eq 0) {
-                Write-Log "✅ $($discord.Name) patché avec succès!"
+                Write-Log "$($discord.Name) patche avec succes!"
                 $success++
             } else {
-                Write-Log "❌ Échec du patch pour $($discord.Name)"
+                Write-Log "Echec du patch pour $($discord.Name)"
             }
         } catch {
-            Write-Log "❌ Erreur lors de l'injection dans $($discord.Name): $($_.Exception.Message)"
+            Write-Log "Erreur lors de l'injection dans $($discord.Name): $($_.Exception.Message)"
         }
     }
     
-    Write-Log "📊 Résultats: $success/$total Discord(s) patchés avec succès"
+    Write-Log "Resultats: $success/$total Discord(s) patches avec succes"
     return $success -eq $total
 }
 
 function Uninstall-Bashcord {
-    Write-Log "🗑️ Désinstallation de Bashcord..."
+    Write-Log "Desinstallation de Bashcord..."
     
     try {
         Set-Location $InstallDir
@@ -259,10 +259,10 @@ function Uninstall-Bashcord {
             Remove-Item $InstallDir -Recurse -Force
         }
         
-        Write-Log "✅ Désinstallation terminée!"
+        Write-Log "Desinstallation terminee!"
         return $true
     } catch {
-        Write-Log "❌ Erreur lors de la désinstallation: $($_.Exception.Message)"
+        Write-Log "Erreur lors de la desinstallation: $($_.Exception.Message)"
         return $false
     }
 }
@@ -273,11 +273,11 @@ function Main {
             Write-Header
         }
         
-        # Vérifier les privilèges administrateur
+        # Verifier les privileges administrateur
         if (!(Test-Admin)) {
-            Write-Color "⚠️  Ce script nécessite des privilèges administrateur." "Yellow"
+            Write-Color "Ce script necessite des privileges administrateur." "Yellow"
             Write-Color "Relancez PowerShell en tant qu'administrateur." "Yellow"
-            if (!$Silent) { Read-Host "Appuyez sur Entrée pour fermer" }
+            if (!$Silent) { Read-Host "Appuyez sur Entree pour fermer" }
             return
         }
         
@@ -285,24 +285,24 @@ function Main {
             $result = Uninstall-Bashcord
             if (!$Silent) {
                 if ($result) {
-                    Write-Color "🎉 Bashcord désinstallé avec succès!" "Green"
+                    Write-Color "Bashcord desinstalle avec succes!" "Green"
                 } else {
-                    Write-Color "❌ Erreur lors de la désinstallation" "Red"
+                    Write-Color "Erreur lors de la desinstallation" "Red"
                 }
-                Read-Host "Appuyez sur Entrée pour fermer"
+                Read-Host "Appuyez sur Entree pour fermer"
             }
             return
         }
         
-        # Installation des dépendances
-        Write-Log "🚀 Démarrage de l'installation automatique..."
+        # Installation des dependances
+        Write-Log "Demarrage de l'installation automatique..."
         
         if (!(Install-Chocolatey)) {
             throw "Impossible d'installer Chocolatey"
         }
         
         if (!(Install-Dependencies)) {
-            throw "Impossible d'installer les dépendances"
+            throw "Impossible d'installer les dependances"
         }
         
         # Clonage et construction
@@ -314,19 +314,19 @@ function Main {
             throw "Impossible de construire Bashcord"
         }
         
-        # Recherche et sélection Discord
+        # Recherche et selection Discord
         $discordList = Find-Discord
         if ($discordList.Count -eq 0) {
-            Write-Color "❌ Aucune installation Discord trouvée!" "Red"
+            Write-Color "Aucune installation Discord trouvee!" "Red"
             Write-Color "Installez Discord avant d'utiliser Bashcord." "Yellow"
-            if (!$Silent) { Read-Host "Appuyez sur Entrée pour fermer" }
+            if (!$Silent) { Read-Host "Appuyez sur Entree pour fermer" }
             return
         }
         
         if (!$Silent) {
             $targetDiscords = Show-DiscordMenu $discordList
             if ($targetDiscords.Count -eq 0) {
-                Write-Color "✋ Installation annulée par l'utilisateur." "Yellow"
+                Write-Color "Installation annulee par l'utilisateur." "Yellow"
                 return
             }
         } else {
@@ -339,29 +339,29 @@ function Main {
         if (!$Silent) {
             Write-Color ""
             if ($injectionSuccess) {
-                Write-Color "🎉 Bashcord installé avec succès!" "Green"
-                Write-Color "🔄 Redémarrez Discord pour voir les modifications." "Cyan"
-                Write-Color "⚙️  Ouvrez F12 pour accéder aux paramètres Bashcord." "Cyan"
+                Write-Color "Bashcord installe avec succes!" "Green"
+                Write-Color "Redemarrez Discord pour voir les modifications." "Cyan"
+                Write-Color "Ouvrez F12 pour acceder aux parametres Bashcord." "Cyan"
             } else {
-                Write-Color "⚠️  Installation partiellement réussie. Consultez les logs." "Yellow"
+                Write-Color "Installation partiellement reussie. Consultez les logs." "Yellow"
             }
             
             Write-Color ""
-            Write-Color "📁 Dossier d'installation: $InstallDir" "Gray"
-            Write-Color "📋 Logs: $LogFile" "Gray"
-            Read-Host "Appuyez sur Entrée pour fermer"
+            Write-Color "Dossier d'installation: $InstallDir" "Gray"
+            Write-Color "Logs: $LogFile" "Gray"
+            Read-Host "Appuyez sur Entree pour fermer"
         }
         
     } catch {
-        Write-Log "❌ Erreur critique: $($_.Exception.Message)"
+        Write-Log "Erreur critique: $($_.Exception.Message)"
         if (!$Silent) {
-            Write-Color "❌ Erreur critique lors de l'installation!" "Red"
+            Write-Color "Erreur critique lors de l'installation!" "Red"
             Write-Color $_.Exception.Message "Red"
             Write-Color "Consultez les logs: $LogFile" "Yellow"
-            Read-Host "Appuyez sur Entrée pour fermer"
+            Read-Host "Appuyez sur Entree pour fermer"
         }
     }
 }
 
-# Exécution
+# Execution
 Main 
