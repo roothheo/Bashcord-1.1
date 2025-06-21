@@ -1,0 +1,36 @@
+dist
+node_modules
+.VSCodeCounter
+
+*.exe
+vencord_installer
+equicord_installer
+
+.idea
+.DS_Store
+
+yarn.lock
+bun.lock
+package-lock.json
+
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+*.tsbuildinfo
+
+
+
+ExtensionCache/
+settings/
+
+src/equicordplugins/usrpe
+
+# vencord companion module cache
+.modules
+
+# Ignorer les fichiers de plugins pour éviter les mises à jour automatiques
+equicordplugins.json
+plugins.json

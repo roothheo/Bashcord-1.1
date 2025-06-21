@@ -1,0 +1,24 @@
+# Configuration Git pour Bashcord
+# Ce fichier documente les fichiers protégés par skip-worktree
+
+# Fichiers core modifiés pour Bashcord (protégés par skip-worktree)
+# src/components/VencordSettings/BackupAndRestoreTab.tsx
+# src/components/VencordSettings/VencordTab.tsx  
+# src/equicordplugins/clientSideBlock/index.tsx
+# src/equicordplugins/followVoiceUser/index.tsx
+# src/equicordplugins/moreStickers/index.tsx
+# src/main/patcher.ts
+# src/plugins/_core/settings.tsx
+# src/utils/settingsSync.ts
+
+# Pour restaurer la protection après un git reset ou clone :
+# git update-index --skip-worktree src/components/VencordSettings/BackupAndRestoreTab.tsx src/components/VencordSettings/VencordTab.tsx src/equicordplugins/clientSideBlock/index.tsx src/equicordplugins/followVoiceUser/index.tsx src/equicordplugins/moreStickers/index.tsx src/main/patcher.ts src/plugins/_core/settings.tsx src/utils/settingsSync.ts
+
+# Pour voir les fichiers protégés :
+# git ls-files -v | grep ^S
+
+# Pour désactiver la protection temporairement :
+# git update-index --no-skip-worktree [fichier]
+
+# Utilisez la branche 'bashcord-custom' pour vos modifications personnalisées
+# Utilisez la branche 'main' pour récupérer les mises à jour du repository original 
