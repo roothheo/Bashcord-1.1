@@ -7,7 +7,7 @@
 import * as DataStore from "@api/DataStore";
 import { Settings } from "@api/Settings";
 import { useForceUpdater } from "@utils/react";
-import { ChannelStore, UserStore } from "@webpack/common";
+import { ChannelStore, React, UserStore } from "@webpack/common";
 
 import { PinOrder, PrivateChannelSortStore, settings } from "./index";
 
@@ -40,18 +40,69 @@ export async function init() {
 
     currentUserCategories = settings.store.userBasedCategoryList[userId] ??= [];
 
-    // Créer automatiquement la catégorie GRP si elle n'existe pas
-    ensureGroupCategory();
+    // Créer automatiquement la catégorie GRP et déplacer les groupes seulement si l'option est activée
+    if (settings.store.autoGroupInCategory) {
+        // Créer automatiquement la catégorie GRP si elle n'existe pas
+        ensureGroupCategory();
 
-    // Déplacer automatiquement tous les groupes vers la catégorie GRP
-    autoMoveGroupsToCategory();
+        // Déplacer automatiquement tous les groupes vers la catégorie GRP
+        autoMoveGroupsToCategory();
+    }
 
+    forceUpdateDms?.();
+}
+
+/**
+ * Supprime la catégorie GRP et libère tous les groupes
+ */
+export function removeGroupCategory() {
+    const groupCategory = currentUserCategories.find(c => c.name === "GRP");
+    if (!groupCategory) return;
+
+    // Libérer tous les canaux de la catégorie GRP
+    groupCategory.channels.forEach(channelId => {
+        // Les canaux seront automatiquement libérés quand on supprime la catégorie
+    });
+
+    // Supprimer la catégorie GRP
+    const categoryIndex = currentUserCategories.findIndex(c => c.id === groupCategory.id);
+    if (categoryIndex !== -1) {
+        currentUserCategories.splice(categoryIndex, 1);
+    }
+}
+
+/**
+ * Gère le changement de l'option autoGroupInCategory
+ */
+export function handleAutoGroupOptionChange(enabled: boolean) {
+    if (enabled) {
+        // Option activée : créer la catégorie GRP et déplacer les groupes
+        ensureGroupCategory();
+        autoMoveGroupsToCategory();
+    } else {
+        // Option désactivée : supprimer la catégorie GRP
+        removeGroupCategory();
+    }
+
+    // Forcer la mise à jour de l'interface
     forceUpdateDms?.();
 }
 
 export function usePinnedDms() {
     forceUpdateDms = useForceUpdater();
-    settings.use(["pinOrder", "canCollapseDmSection", "dmSectionCollapsed", "userBasedCategoryList"]);
+
+    // Surveiller les changements de l'option autoGroupInCategory
+    const [prevAutoGroup, setPrevAutoGroup] = React.useState(settings.store.autoGroupInCategory);
+
+    React.useEffect(() => {
+        const currentAutoGroup = settings.store.autoGroupInCategory;
+        if (prevAutoGroup !== currentAutoGroup) {
+            handleAutoGroupOptionChange(currentAutoGroup);
+            setPrevAutoGroup(currentAutoGroup);
+        }
+    }, [settings.store.autoGroupInCategory, prevAutoGroup]);
+
+    settings.use(["pinOrder", "canCollapseDmSection", "dmSectionCollapsed", "autoGroupInCategory", "userBasedCategoryList"]);
 }
 
 /**
@@ -120,8 +171,8 @@ export function addChannelToCategory(channelId: string, categoryId: string) {
 
     if (category.channels.includes(channelId)) return;
 
-    // Si c'est un groupe, s'assurer qu'il va dans la catégorie GRP
-    if (isGroupChannel(channelId)) {
+    // Si c'est un groupe et que l'option autoGroupInCategory est activée, s'assurer qu'il va dans la catégorie GRP
+    if (isGroupChannel(channelId) && settings.store.autoGroupInCategory) {
         const groupCategory = ensureGroupCategory();
         if (categoryId !== groupCategory.id) {
             // Forcer le déplacement vers la catégorie GRP
@@ -146,9 +197,9 @@ export function removeCategory(categoryId: string) {
     const categoryIndex = currentUserCategories.findIndex(c => c.id === categoryId);
     if (categoryIndex === -1) return;
 
-    // Empêcher la suppression de la catégorie GRP
+    // Empêcher la suppression de la catégorie GRP seulement si l'option autoGroupInCategory est activée
     const category = currentUserCategories[categoryIndex];
-    if (category.name === "GRP") {
+    if (category.name === "GRP" && settings.store.autoGroupInCategory) {
         return;
     }
 

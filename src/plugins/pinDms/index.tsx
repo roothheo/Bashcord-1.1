@@ -18,7 +18,7 @@ import { Channel } from "discord-types/general";
 import { contextMenus } from "./components/contextMenu";
 import { openCategoryModal, requireSettingsMenu } from "./components/CreateCategoryModal";
 import { DEFAULT_CHUNK_SIZE } from "./constants";
-import { autoMoveGroupsToCategory, canMoveCategory, canMoveCategoryInDirection, Category, categoryLen, collapseCategory, getAllUncollapsedChannels, getCategoryByIndex, getSections, init, isPinned, moveCategory, removeCategory, usePinnedDms } from "./data";
+import { autoMoveGroupsToCategory, canMoveCategory, canMoveCategoryInDirection, Category, categoryLen, collapseCategory, getAllUncollapsedChannels, getCategoryByIndex, getSections, handleAutoGroupOptionChange, init, isPinned, moveCategory, removeCategory, removeGroupCategory, usePinnedDms } from "./data";
 
 interface ChannelComponentProps {
     children: React.ReactNode,
@@ -56,6 +56,11 @@ export const settings = definePluginSettings({
         description: "Collapse DM section",
         default: false,
         hidden: true
+    },
+    autoGroupInCategory: {
+        type: OptionType.BOOLEAN,
+        description: "Automatically place group chats in GRP category",
+        default: true
     },
     userBasedCategoryList: {
         type: OptionType.CUSTOM,
@@ -168,18 +173,20 @@ export default definePlugin({
     flux: {
         CONNECTION_OPEN: init,
         CHANNEL_CREATE: (payload: { channel: Channel; }) => {
-            // Surveiller les nouveaux canaux et ranger automatiquement les groupes
-            if (payload.channel?.type === 3) { // GROUP_DM
+            // Surveiller les nouveaux canaux et ranger automatiquement les groupes si l'option est activée
+            if (payload.channel?.type === 3 && settings.store.autoGroupInCategory) { // GROUP_DM
                 setTimeout(() => {
                     autoMoveGroupsToCategory();
                 }, 100); // Petit délai pour s'assurer que le canal est bien ajouté
             }
         },
         CHANNEL_UPDATES: () => {
-            // Vérifier périodiquement que tous les groupes sont dans la bonne catégorie
-            setTimeout(() => {
-                autoMoveGroupsToCategory();
-            }, 100);
+            // Vérifier périodiquement que tous les groupes sont dans la bonne catégorie si l'option est activée
+            if (settings.store.autoGroupInCategory) {
+                setTimeout(() => {
+                    autoMoveGroupsToCategory();
+                }, 100);
+            }
         }
     },
 
